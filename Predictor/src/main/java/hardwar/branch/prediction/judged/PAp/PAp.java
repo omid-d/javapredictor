@@ -25,7 +25,7 @@ public class PAp implements BranchPredictor {
         this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the PABHR with the given bhr and branch instruction size
-        PABHR = new RegisterBank(BHRSize,branchInstructionSize);
+        PABHR = new RegisterBank(BHRSize,(int)Math.pow(2,branchInstructionSize));
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
