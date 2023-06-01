@@ -25,17 +25,21 @@ public class GAp implements BranchPredictor {
      */
     public GAp(int BHRSize, int SCSize, int branchInstructionSize) {
         // TODO: complete the constructor
-        this.branchInstructionSize = 0;
+        this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        Bit[] bits = new Bit[BHRSize];
+        for (int i=0;i<BHRSize;i++)bits[i]=Bit.ZERO;
+        this.BHR=new SIPORegister("GApBHR",BHRSize,bits);
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        PAPHT = new PerAddressPredictionHistoryTable(branchInstructionSize,(int) Math.pow(2,BHRSize),2);
 
         // Initialize the SC register
-        SC = null;
+        Bit[] SCbits = new Bit[SCSize];
+        for (int i=0;i<SCSize;i++)SCbits[i]=Bit.ZERO;
+        SC = new SIPORegister("SC",SCSize, SCbits);
     }
 
     /**
@@ -46,8 +50,13 @@ public class GAp implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+        Bit[] bits1=getCacheEntry(branchInstruction.getInstructionAddress());
+        PAPHT.putIfAbsent(bits1, getDefaultBlock());
+        Bit[] bits=PAPHT.get(getCacheEntry(branchInstruction.getInstructionAddress()));
+        SC.load(bits);
+        if(SC.read()[0]==Bit.ONE) {
+            return BranchResult.TAKEN;
+        }else return BranchResult.NOT_TAKEN;
     }
 
     /**
@@ -58,7 +67,13 @@ public class GAp implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
-        // TODO : complete Task 2
+        Bit[] newBits=CombinationalLogic.count(SC.read(),actual==BranchResult.TAKEN,CountMode.SATURATING);
+        SC.load(newBits);
+        PAPHT.put(getCacheEntry(branchInstruction.getInstructionAddress()), newBits);
+        Bit bit;
+        if(actual==BranchResult.TAKEN)bit=Bit.ONE;
+        else bit=Bit.ZERO;
+        BHR.insert(bit);
     }
 
 
