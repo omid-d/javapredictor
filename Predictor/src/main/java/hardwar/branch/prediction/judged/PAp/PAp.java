@@ -25,7 +25,7 @@ public class PAp implements BranchPredictor {
         this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the PABHR with the given bhr and branch instruction size
-        PABHR = new RegisterBank(BHRSize,(int)Math.pow(2,branchInstructionSize));
+        PABHR = new RegisterBank(branchInstructionSize, BHRSize);
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
@@ -56,9 +56,11 @@ public class PAp implements BranchPredictor {
         SC.load(newBits);
         PAPHT.put(getCacheEntry(instruction.getInstructionAddress(),PABHR.read(instruction.getInstructionAddress()).read()), newBits);
         Bit bit;
+        ShiftRegister a=PABHR.read(instruction.getInstructionAddress());
         if(actual==BranchResult.TAKEN)bit=Bit.ONE;
         else bit=Bit.ZERO;
-        PABHR.read(instruction.getInstructionAddress()).insert(bit);
+        a.insert(Bit.of(BranchResult.isTaken(actual)));
+        PABHR.write(instruction.getInstructionAddress(),a.read());
     }
 
 
