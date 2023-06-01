@@ -42,6 +42,8 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
+        Bit[] bits=BHR.read();
+        PHT.putIfAbsent(bits,getDefaultBlock());
         SC.load(PHT.get(BHR.read()));
         if(SC.read()[0]==Bit.ONE) {
             return BranchResult.TAKEN;
@@ -61,7 +63,7 @@ public class GAg implements BranchPredictor {
         PHT.put(BHR.read(),newBits);
         Bit bit;
         if(actual==BranchResult.TAKEN)bit=Bit.ONE;
-        else bit=Bit.ZERO
+        else bit=Bit.ZERO;
         BHR.insert(bit);
     }
 
