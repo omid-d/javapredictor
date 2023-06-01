@@ -1,10 +1,10 @@
-Thu Jun  1 13:16:52 UTC 2023
+Thu Jun  1 13:18:35 UTC 2023
 GAg: 
 Test passed, 1000 out of 1000 assertions passed
 
 GAp: 
-Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 287 out of 1000 assertions passed
-	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+Test passed, 1000 out of 1000 assertions passed
+
 GAs: 
 Test passed, 1000 out of 1000 assertions passed
 
