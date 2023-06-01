@@ -58,8 +58,9 @@ public class GAs implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
+        Bit[] bits1=getCacheEntry(branchInstruction.getInstructionAddress());
+        PSPHT.putIfAbsent(bits1,getDefaultBlock());
         Bit[] bits=PSPHT.get(getCacheEntry(branchInstruction.getInstructionAddress()));
-        PSPHT.putIfAbsent(bits,getDefaultBlock());
         SC.load(bits);
         if(SC.read()[0]==Bit.ONE) {
             return BranchResult.TAKEN;
